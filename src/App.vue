@@ -1,7 +1,7 @@
 <template>
   <div class="app">
     <div class="container">
-      <Header @add-account="addAccount" />
+      <AppHeader @add-account="addAccount" />
       <AppPanel />
       <Table :accounts="accounts" />
     </div>
@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import Header from '@/components/Header.vue'
+import AppHeader from '@/components/AppHeader.vue'
 import AppPanel from '@/components/AppPanel.vue'
 import Table from '@/components/Table.vue'
 import type { Account } from '@/types/account'
