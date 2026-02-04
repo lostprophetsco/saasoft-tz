@@ -70,13 +70,12 @@ npm run lint
 ```
 src/
 ├── components/
-│   ├── Header.vue              # Заголовок с кнопкой "Добавить"
-│   ├── Panel.vue               # Панель с подсказками
-│   └── Table.vue               # Таблица с учетными записями
-├── stores/
-│   └── accounts.ts             # Pinia store для учетных записей
+│   ├── AppHeader.vue           # Заголовок с кнопкой "Добавить"
+│   ├── AppPanel.vue            # Панель с подсказками
+│   └── AppTable.vue            # Таблица с учетными записями
 ├── types/
-│   └── account.ts              # TypeScript типы
+│   ├── account.ts              # Типы учетных записей (Account, AccountType)
+│   └── table.ts                # Интерфейсы для таблицы (EditableAccount, TableProps)
 ├── App.vue                     # Основной компонент
 └── main.ts                     # Точка входа приложения
 ```

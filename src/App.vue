@@ -3,7 +3,12 @@
     <div class="container">
       <AppHeader @add-account="addAccount" />
       <AppPanel />
-      <AppTable :accounts="accounts" />
+      <AppTable 
+        :accounts="accounts"
+        @update-account="updateAccount"
+        @save-account="saveAccount"
+        @delete-account="deleteAccount"
+      />
     </div>
   </div>
 </template>
@@ -18,7 +23,46 @@ import type { Account } from '@/types/account'
 const accounts = ref<Account[]>([])
 
 const addAccount = () => {
-  console.log('Add account clicked')
+  const newAccount: Account = {
+    id: Date.now().toString(),
+    labels: [],
+    type: '', // Тип не выбран
+    login: '',
+    password: null, // Пароль null, т.к. тип не выбран
+    isNew: true,
+    isReadyForSave: false,
+    isSaved: false
+  }
+  
+  accounts.value.push(newAccount)
+}
+
+const updateAccount = (account: Account) => {
+  const index = accounts.value.findIndex(acc => acc.id === account.id)
+  if (index !== -1) {
+    accounts.value[index] = account
+  }
+}
+
+const saveAccount = (account: Account) => {
+  const index = accounts.value.findIndex(acc => acc.id === account.id)
+  if (index !== -1) {
+    const savedAccount = {
+      ...account,
+      isNew: false, // При сохранении запись больше не новая
+      isSaved: true
+    }
+    accounts.value[index] = savedAccount
+    // TODO: Здесь будет сохранение в Pinia
+    console.log('Saving to Pinia:', savedAccount)
+  }
+}
+
+const deleteAccount = (id: string) => {
+  const index = accounts.value.findIndex(acc => acc.id === id)
+  if (index !== -1) {
+    accounts.value.splice(index, 1)
+  }
 }
 </script>
 

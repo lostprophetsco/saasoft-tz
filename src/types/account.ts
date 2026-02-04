@@ -1,4 +1,4 @@
-export const ACCOUNT_TYPES = ['LDAP', 'Локальная'] as const
+export const ACCOUNT_TYPES = ['LDAP', 'Локальная']
 
 export const MAX_LENGTHS = {
   LABELS: 50,
@@ -10,7 +10,7 @@ export interface LabelItem {
   text: string
 }
 
-export type AccountType = 'LDAP' | 'Локальная'
+export type AccountType = 'LDAP' | 'Локальная' | ''
 
 export interface Account {
   id: string
@@ -18,4 +18,7 @@ export interface Account {
   type: AccountType
   login: string
   password: string | null
+  isNew?: boolean
+  isReadyForSave?: boolean
+  isSaved?: boolean
 }
