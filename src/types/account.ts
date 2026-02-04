@@ -3,7 +3,7 @@ export const ACCOUNT_TYPES = ['LDAP', 'Локальная']
 export const MAX_LENGTHS = {
   LABELS: 50,
   LOGIN: 100,
-  PASSWORD: 100
+  PASSWORD: 100,
 } as const
 
 export interface LabelItem {

@@ -3,7 +3,7 @@
     <div class="container">
       <AppHeader @add-account="addAccount" />
       <AppPanel />
-      <AppTable 
+      <AppTable
         :accounts="accounts"
         @update-account="updateAccount"
         @save-account="saveAccount"
@@ -14,55 +14,49 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useAccountsStore } from '@/stores/accounts'
 import AppHeader from '@/components/AppHeader.vue'
 import AppPanel from '@/components/AppPanel.vue'
 import AppTable from '@/components/AppTable.vue'
 import type { Account } from '@/types/account'
 
+const accountsStore = useAccountsStore()
 const accounts = ref<Account[]>([])
 
+onMounted(() => {
+  accountsStore.loadFromLocalStorage()
+  accounts.value = accountsStore.accounts
+})
+
 const addAccount = () => {
-  const newAccount: Account = {
-    id: Date.now().toString(),
+  accountsStore.addAccount({
     labels: [],
-    type: '', // Тип не выбран
+    type: '', // Тип не выбран, пароль не требуется
     login: '',
-    password: null, // Пароль null, т.к. тип не выбран
+    password: null,
     isNew: true,
     isReadyForSave: false,
-    isSaved: false
-  }
-  
-  accounts.value.push(newAccount)
+    isSaved: false,
+  })
+
+  accounts.value = accountsStore.accounts
 }
 
 const updateAccount = (account: Account) => {
-  const index = accounts.value.findIndex(acc => acc.id === account.id)
-  if (index !== -1) {
-    accounts.value[index] = account
-  }
+  accountsStore.updateAccount(account)
+  accounts.value = accountsStore.accounts
 }
 
 const saveAccount = (account: Account) => {
-  const index = accounts.value.findIndex(acc => acc.id === account.id)
-  if (index !== -1) {
-    const savedAccount = {
-      ...account,
-      isNew: false, // При сохранении запись больше не новая
-      isSaved: true
-    }
-    accounts.value[index] = savedAccount
-    // TODO: Здесь будет сохранение в Pinia
-    console.log('Saving to Pinia:', savedAccount)
-  }
+  accountsStore.saveAccount(account)
+  accounts.value = accountsStore.accounts
+  console.log('Saved to Pinia:', account)
 }
 
 const deleteAccount = (id: string) => {
-  const index = accounts.value.findIndex(acc => acc.id === id)
-  if (index !== -1) {
-    accounts.value.splice(index, 1)
-  }
+  accountsStore.deleteAccount(id)
+  accounts.value = accountsStore.accounts
 }
 </script>
 

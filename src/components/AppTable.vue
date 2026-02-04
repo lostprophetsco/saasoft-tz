@@ -12,7 +12,7 @@
         <InputText
           v-model="data.labelsFormatted"
           :invalid="!data.labelsFormatted && data.labelsFormatted !== ''"
-          maxlength="50"
+          :maxlength="MAX_LENGTHS.LABELS"
           @blur="updateAccount(data)"
         />
       </template>
@@ -34,7 +34,7 @@
         <InputText
           v-model="data.login"
           :invalid="!data.login"
-          maxlength="100"
+          :maxlength="MAX_LENGTHS.LOGIN"
           @blur="updateAccount(data)"
         />
       </template>
@@ -46,7 +46,7 @@
           v-if="data.type === 'Локальная'"
           v-model="data.password"
           :invalid="!data.password"
-          maxlength="100"
+          :maxlength="MAX_LENGTHS.PASSWORD"
           :feedback="false"
           toggleMask
           @blur="updateAccount(data)"
@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
-import { ACCOUNT_TYPES } from '@/types/account'
+import { ACCOUNT_TYPES, MAX_LENGTHS } from '@/types/account'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import InputText from 'primevue/inputtext'
@@ -149,12 +149,12 @@ const deleteAccount = (id: string) => {
   emit('delete-account', id)
 }
 
-// Вычисляемое свойство для определения видимости колонки пароля
+// Показывать колонку пароля только для записей типа "Локальная"
 const shouldShowPasswordColumn = computed(() => {
   return props.accounts.some((account) => account.type === 'Локальная')
 })
 
-// Вычисляемое свойство для определения видимости колонки с кнопками удаления
+// Показывать колонку с кнопками удаления только для сохраненных записей
 const hasDeletableAccounts = computed(() => {
   return props.accounts.some((account) => account.isSaved)
 })
