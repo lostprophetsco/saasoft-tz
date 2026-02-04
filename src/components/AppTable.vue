@@ -71,6 +71,7 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { ACCOUNT_TYPES, MAX_LENGTHS } from '@/types/account'
+import { useValidation } from '@/composables/useValidation'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import InputText from 'primevue/inputtext'
@@ -84,6 +85,7 @@ const props = defineProps<TableProps>()
 const emit = defineEmits<TableEmits>()
 
 const accountTypes = ACCOUNT_TYPES
+const { validateAccount } = useValidation()
 
 const formatLabels = (labels: LabelItem[]): string => {
   return labels.map((item) => item.text).join('; ')
@@ -99,15 +101,6 @@ const parseLabels = (labelsString: string): LabelItem[] => {
     .map((text) => ({ text }))
 }
 
-const isAccountValid = (account: EditableAccount): boolean => {
-  // Проверка обязательных полей
-  if (!account.type) return false
-  if (!account.login.trim()) return false
-  if (account.type === 'Локальная' && !account.password?.trim()) return false
-
-  return true
-}
-
 const prepareAccountForEdit = (account: Account): EditableAccount => {
   return {
     ...account,
@@ -116,7 +109,7 @@ const prepareAccountForEdit = (account: Account): EditableAccount => {
 }
 
 const updateAccount = (data: EditableAccount) => {
-  const isReady = isAccountValid(data)
+  const isReady = validateAccount(data)
 
   const account: Account = {
     id: data.id,
