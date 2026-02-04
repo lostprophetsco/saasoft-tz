@@ -72,6 +72,7 @@
 import { ref, watch, computed } from 'vue'
 import { ACCOUNT_TYPES, MAX_LENGTHS } from '@/types/account'
 import { useValidation } from '@/composables/useValidation'
+import { useAccountForm } from '@/composables/useAccountForm'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import InputText from 'primevue/inputtext'
@@ -86,43 +87,21 @@ const emit = defineEmits<TableEmits>()
 
 const accountTypes = ACCOUNT_TYPES
 const { validateAccount } = useValidation()
-
-const formatLabels = (labels: LabelItem[]): string => {
-  return labels.map((item) => item.text).join('; ')
-}
-
-const parseLabels = (labelsString: string): LabelItem[] => {
-  if (!labelsString.trim()) return []
-
-  return labelsString
-    .split(';')
-    .map((text) => text.trim())
-    .filter((text) => text.length > 0)
-    .map((text) => ({ text }))
-}
+const { createEditableAccount, resetOnTypeChange, prepareForUpdate } = useAccountForm()
 
 const prepareAccountForEdit = (account: Account): EditableAccount => {
-  return {
-    ...account,
-    labelsFormatted: formatLabels(account.labels),
-  }
+  return createEditableAccount(account)
 }
 
 const updateAccount = (data: EditableAccount) => {
   const isReady = validateAccount(data)
-
-  const account: Account = {
-    id: data.id,
-    labels: parseLabels(data.labelsFormatted || ''),
-    type: data.type,
-    login: data.login,
-    password: data.type === 'LDAP' ? null : data.password,
-    isReadyForSave: isReady,
-    isSaved: false, // При любом изменении сбрасываем isSaved
-  }
+  const account = prepareForUpdate(data)
+  
+  // Устанавливаем флаг готовности к сохранению
+  account.isReadyForSave = isReady
 
   emit('update-account', account)
-
+  
   // Если готово к сохранению, автоматически сохраняем
   if (isReady) {
     emit('save-account', account)
@@ -130,12 +109,8 @@ const updateAccount = (data: EditableAccount) => {
 }
 
 const onTypeChange = (data: EditableAccount) => {
-  if (data.type === 'LDAP') {
-    data.password = null
-  } else if (data.type === 'Локальная' && !data.password) {
-    data.password = ''
-  }
-  updateAccount(data)
+  const updated = resetOnTypeChange(data, data.type)
+  updateAccount(updated)
 }
 
 const deleteAccount = (id: string) => {

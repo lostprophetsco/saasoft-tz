@@ -16,27 +16,22 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useAccounts } from '@/composables/useAccounts'
+import { useAccountForm } from '@/composables/useAccountForm'
 import AppHeader from '@/components/AppHeader.vue'
 import AppPanel from '@/components/AppPanel.vue'
 import AppTable from '@/components/AppTable.vue'
 import type { Account } from '@/types/account'
 
 const { accounts, initialize, addAccount, updateAccount, saveAccount, deleteAccount } = useAccounts()
+const { createEmptyAccount } = useAccountForm()
 
 onMounted(() => {
   initialize()
 })
 
 const handleAddAccount = () => {
-  addAccount({
-    labels: [],
-    type: '', // Тип не выбран, пароль не требуется
-    login: '',
-    password: null,
-    isNew: true,
-    isReadyForSave: false,
-    isSaved: false
-  })
+  const newAccount = createEmptyAccount()
+  addAccount(newAccount)
 }
 
 const handleUpdateAccount = (account: Account) => {
