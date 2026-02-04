@@ -3,7 +3,7 @@
     <div class="container">
       <AppHeader @add-account="addAccount" />
       <AppPanel />
-      <Table :accounts="accounts" />
+      <AppTable :accounts="accounts" />
     </div>
   </div>
 </template>
@@ -12,7 +12,7 @@
 import { ref } from 'vue'
 import AppHeader from '@/components/AppHeader.vue'
 import AppPanel from '@/components/AppPanel.vue'
-import Table from '@/components/Table.vue'
+import AppTable from '@/components/AppTable.vue'
 import type { Account } from '@/types/account'
 
 const accounts = ref<Account[]>([])
