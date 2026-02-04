@@ -1,48 +1,86 @@
-# saasoft-tz
+# saasoft-tz - Форма управления учетными записями
 
-This template should help get you started developing with Vue 3 in Vite.
+Тестовое задание для Vue Frontend Developer
 
-## Recommended IDE Setup
+## Описание проекта
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Необходимо реализовать форму управления учетными записями с возможностью добавления, удаления и валидации записей.
 
-## Recommended Browser Setup
+## Техническое задание
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+### Стек технологий
+- Vue.js 3 + Composition API
+- TypeScript
+- Pinia (стейт менеджер)
+- Любой UI фреймворк на выбор
 
-## Type Support for `.vue` Imports in TS
+### Функциональные требования
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+**Страница состоит из 3 блоков:**
+1. **Заголовок "Учетные записи"** и кнопка "Добавить" (в одном ряду)
+2. **Панель с информацией и иконкой** 
+3. **Таблица** со списком учетных записей
 
-## Customize configuration
+**Поля в таблице:**
+- **Метка** - текстовое поле, до 50 символов, можно ввести несколько меток через точку с запятой
+- **Тип записи** - выпадающий список (LDAP, Локальная)
+- **Логин** - текстовое поле, обязательно для заполнения, до 100 символов
+- **Пароль** - поле для пароля, обязательно для "Локальная", до 100 символов
+- **Действия** - кнопка удаления записи (показывается только для сохраненных записей)
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### Как это работает
+1. При нажатии кнопки **"+"** в конец таблицы добавляется новая пустая запись **без кнопки удалить**
+2. При нажатии кнопки **удаления** запись полностью удаляется (только у сохраненных записей)
+3. **Проверка полей:** обязательные поля проверяются когда вы уходите с них
+4. **Подсветка ошибок:** поля с ошибками выделяются красной рамкой
+5. **Умное отображение полей:**
+   - Новая запись: тип не выбран → поле "Пароль" скрыто
+   - При выборе "Локальная": поле "Пароль" появляется
+   - При выборе "LDAP": поле "Пароль" скрывается
+6. **Адаптивная таблица:** если ни у одной записи нет пароля, поле "Логин" расширяется на 2 колонки
+7. **Автосохранение:** изменения сохраняются автоматически при валидных данных в обязательных полях (при добавлении новой учетной записи или обновлении любого поля в имеющейся уже)
+8. **Хранение данных:** все сохраняется в браузере и восстанавливается после перезагрузки страницы
 
-## Project Setup
+## Разработка
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Запуск для разработки
 
 ```sh
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+### Сборка для продакшена
 
 ```sh
 npm run build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+### Линтинг
 
 ```sh
 npm run lint
 ```
+
+## Структура проекта
+
+```
+src/
+├── components/
+│   ├── Header.vue              # Заголовок с кнопкой "Добавить"
+│   ├── Panel.vue               # Панель с подсказками
+│   └── Table.vue               # Таблица с учетными записями
+├── stores/
+│   └── accounts.ts             # Pinia store для учетных записей
+├── types/
+│   └── account.ts              # TypeScript типы
+├── App.vue                     # Основной компонент
+└── main.ts                     # Точка входа приложения
+```
+
+## Результат
+
+Готовый проект должен быть доступен в репозитории с историей коммитов.
