@@ -2,7 +2,7 @@
   <div class="app">
     <div class="container">
       <Header @add-account="addAccount" />
-      <Panel />
+      <AppPanel />
       <Table :accounts="accounts" />
     </div>
   </div>
@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import Header from '@/components/Header.vue'
-import Panel from '@/components/Panel.vue'
+import AppPanel from '@/components/AppPanel.vue'
 import Table from '@/components/Table.vue'
 import type { Account } from '@/types/account'
 
