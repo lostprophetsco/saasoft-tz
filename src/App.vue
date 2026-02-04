@@ -1,62 +1,54 @@
 <template>
   <div class="app">
     <div class="container">
-      <AppHeader @add-account="addAccount" />
+      <AppHeader @add-account="handleAddAccount" />
       <AppPanel />
       <AppTable
         :accounts="accounts"
-        @update-account="updateAccount"
-        @save-account="saveAccount"
-        @delete-account="deleteAccount"
+        @update-account="handleUpdateAccount"
+        @save-account="handleSaveAccount"
+        @delete-account="handleDeleteAccount"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useAccountsStore } from '@/stores/accounts'
+import { onMounted } from 'vue'
+import { useAccounts } from '@/composables/useAccounts'
 import AppHeader from '@/components/AppHeader.vue'
 import AppPanel from '@/components/AppPanel.vue'
 import AppTable from '@/components/AppTable.vue'
 import type { Account } from '@/types/account'
 
-const accountsStore = useAccountsStore()
-const accounts = ref<Account[]>([])
+const { accounts, initialize, addAccount, updateAccount, saveAccount, deleteAccount } = useAccounts()
 
 onMounted(() => {
-  accountsStore.loadFromLocalStorage()
-  accounts.value = accountsStore.accounts
+  initialize()
 })
 
-const addAccount = () => {
-  accountsStore.addAccount({
+const handleAddAccount = () => {
+  addAccount({
     labels: [],
     type: '', // Тип не выбран, пароль не требуется
     login: '',
     password: null,
     isNew: true,
     isReadyForSave: false,
-    isSaved: false,
+    isSaved: false
   })
-
-  accounts.value = accountsStore.accounts
 }
 
-const updateAccount = (account: Account) => {
-  accountsStore.updateAccount(account)
-  accounts.value = accountsStore.accounts
+const handleUpdateAccount = (account: Account) => {
+  updateAccount(account)
 }
 
-const saveAccount = (account: Account) => {
-  accountsStore.saveAccount(account)
-  accounts.value = accountsStore.accounts
-  console.log('Saved to Pinia:', account)
+const handleSaveAccount = (account: Account) => {
+  saveAccount(account)
 }
 
-const deleteAccount = (id: string) => {
-  accountsStore.deleteAccount(id)
-  accounts.value = accountsStore.accounts
+const handleDeleteAccount = (id: string) => {
+  deleteAccount(id)
 }
 </script>
 
