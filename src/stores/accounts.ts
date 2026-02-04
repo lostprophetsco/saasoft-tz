@@ -49,8 +49,10 @@ export const useAccountsStore = defineStore('accounts', {
     deleteAccount(id: string): void {
       const index = this.accounts.findIndex((acc) => acc.id === id)
       if (index !== -1) {
+        const deletedAccount = this.accounts[index]
         this.accounts.splice(index, 1)
         this.saveToLocalStorage()
+        console.log('Account deleted:', deletedAccount)
       }
     },
 
