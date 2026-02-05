@@ -11,7 +11,6 @@
       <template #body="{ data }">
         <InputText
           v-model="data.labelsFormatted"
-          :invalid="!data.labelsFormatted && data.labelsFormatted !== ''"
           :maxlength="MAX_LENGTHS.LABELS"
           @blur="updateAccount(data)"
         />
