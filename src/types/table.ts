@@ -1,4 +1,3 @@
-import type { ComputedRef } from 'vue'
 import type { Account } from './account'
 
 export interface EditableAccount extends Account {
@@ -6,12 +5,6 @@ export interface EditableAccount extends Account {
   isNew?: boolean
   isReadyForSave?: boolean
   isSaved?: boolean
-  isLocal?: ComputedRef<boolean>
-  isSavedComputed?: ComputedRef<boolean>
-  isLabelsInvalid?: ComputedRef<boolean>
-  isTypeInvalid?: ComputedRef<boolean>
-  isLoginInvalid?: ComputedRef<boolean>
-  isPasswordInvalid?: ComputedRef<boolean>
 }
 
 export interface TableProps {

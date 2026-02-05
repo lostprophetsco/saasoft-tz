@@ -11,7 +11,7 @@
       <template #body="{ data }">
         <InputText
           v-model="data.labelsFormatted"
-          :invalid="data.isLabelsInvalid"
+          :invalid="!data.labelsFormatted && data.labelsFormatted !== ''"
           :maxlength="MAX_LENGTHS.LABELS"
           @blur="updateAccount(data)"
         />
@@ -23,7 +23,7 @@
         <Select
           v-model="data.type"
           :options="accountTypes"
-          :invalid="data.isTypeInvalid"
+          :invalid="!data.type"
           @change="onTypeChange(data)"
         />
       </template>
@@ -33,7 +33,7 @@
       <template #body="{ data }">
         <InputText
           v-model="data.login"
-          :invalid="data.isLoginInvalid"
+          :invalid="!data.login"
           :maxlength="MAX_LENGTHS.LOGIN"
           @blur="updateAccount(data)"
         />
@@ -43,9 +43,9 @@
     <Column v-if="shouldShowPasswordColumn" field="password" header="Пароль">
       <template #body="{ data }">
         <Password
-          v-if="data.isLocal"
+          v-if="data.type === 'Локальная'"
           v-model="data.password"
-          :invalid="data.isPasswordInvalid"
+          :invalid="!data.password"
           :maxlength="MAX_LENGTHS.PASSWORD"
           :feedback="false"
           toggleMask
@@ -58,7 +58,7 @@
     <Column v-if="hasDeletableAccounts" header="">
       <template #body="{ data }">
         <Button
-          v-if="data.isSavedComputed"
+          v-if="data.isSaved"
           icon="pi pi-trash"
           class="p-button-danger p-button-text"
           @click="deleteAccount(data.id)"
@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { ACCOUNT_TYPES, MAX_LENGTHS } from '@/types/account'
 import { useValidation } from '@/composables/useValidation'
 import { useAccountForm } from '@/composables/useAccountForm'
@@ -79,6 +79,7 @@ import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import Password from 'primevue/password'
 import Button from 'primevue/button'
+import type { Account, LabelItem } from '@/types/account'
 import type { EditableAccount, TableProps, TableEmits } from '@/types/table'
 
 const props = defineProps<TableProps>()
@@ -88,31 +89,19 @@ const accountTypes = ACCOUNT_TYPES
 const { validateAccount } = useValidation()
 const { createEditableAccount, resetOnTypeChange, prepareForUpdate } = useAccountForm()
 
-// Prepare accounts for editing with formatted labels and computed properties
-const editableAccounts = computed(() => {
-  return props.accounts.map(account => {
-    const editable = createEditableAccount(account)
-    return {
-      ...editable,
-      isLocal: computed(() => editable.type === 'Локальная'),
-      isSavedComputed: computed(() => editable.isSaved),
-      isLabelsInvalid: computed(() => !editable.labelsFormatted && editable.labelsFormatted !== ''),
-      isTypeInvalid: computed(() => !editable.type),
-      isLoginInvalid: computed(() => !editable.login),
-      isPasswordInvalid: computed(() => !editable.password)
-    }
-  })
-})
+const prepareAccountForEdit = (account: Account): EditableAccount => {
+  return createEditableAccount(account)
+}
 
 const updateAccount = (data: EditableAccount) => {
   const isReady = validateAccount(data)
   const account = prepareForUpdate(data)
-
+  
   // Устанавливаем флаг готовности к сохранению
   account.isReadyForSave = isReady
 
   emit('update-account', account)
-
+  
   // Если готово к сохранению, автоматически сохраняем
   if (isReady) {
     emit('save-account', account)
@@ -137,6 +126,17 @@ const shouldShowPasswordColumn = computed(() => {
 const hasDeletableAccounts = computed(() => {
   return props.accounts.some((account) => account.isSaved)
 })
+
+// Prepare accounts for editing with formatted labels
+const editableAccounts = ref<EditableAccount[]>(props.accounts.map(prepareAccountForEdit))
+
+watch(
+  () => props.accounts,
+  (newAccounts) => {
+    editableAccounts.value = newAccounts.map(prepareAccountForEdit)
+  },
+  { deep: true },
+)
 </script>
 
 <style scoped>
