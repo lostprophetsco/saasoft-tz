@@ -70,7 +70,8 @@ export function useAccountForm() {
   const prepareForUpdate = (account: EditableAccount): Account => {
     return {
       ...toAccount(account),
-      isSaved: false // При обновлении сбрасываем флаг сохранения
+      isSaved: false, // При обновлении сбрасываем флаг сохранения
+      isNew: false // При обновлении сбрасываем флаг новой записи
     }
   }
 

@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 import { ACCOUNT_TYPES, MAX_LENGTHS } from '@/types/account'
 import { useValidation } from '@/composables/useValidation'
 import { useAccountForm } from '@/composables/useAccountForm'
@@ -80,7 +80,7 @@ import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import Password from 'primevue/password'
 import Button from 'primevue/button'
-import type { Account, LabelItem } from '@/types/account'
+import type { Account } from '@/types/account'
 import type { EditableAccount, TableProps, TableEmits } from '@/types/table'
 
 const props = defineProps<TableProps>()
@@ -117,16 +117,6 @@ const onTypeChange = (data: EditableAccount) => {
 const deleteAccount = (id: string) => {
   emit('delete-account', id)
 }
-
-// Показывать колонку пароля только для записей типа "Локальная"
-const shouldShowPasswordColumn = computed(() => {
-  return props.accounts.some((account) => account.type === 'Локальная')
-})
-
-// Показывать колонку с кнопками удаления только для сохраненных записей
-const hasDeletableAccounts = computed(() => {
-  return props.accounts.some((account) => account.isSaved)
-})
 
 // Prepare accounts for editing with formatted labels
 const editableAccounts = ref<EditableAccount[]>(props.accounts.map(prepareAccountForEdit))

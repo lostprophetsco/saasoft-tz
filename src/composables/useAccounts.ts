@@ -28,7 +28,6 @@ export function useAccounts() {
   // Сохранение записи (установка флага isSaved)
   const saveAccount = (account: Account) => {
     store.saveAccount(account)
-    console.log('Account saved:', account)
   }
 
   // Удаление записи
@@ -51,7 +50,7 @@ export function useAccounts() {
     accounts,
     savedAccounts,
     hasLocalAccounts,
-    
+
     // Методы
     initialize,
     addAccount,

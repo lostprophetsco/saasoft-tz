@@ -13,20 +13,24 @@ export const useAccountsStore = defineStore('accounts', {
 
   actions: {
     addAccount(account: Omit<Account, 'id'>): Account {
+      console.log('🆕 Adding new account:', account)
       const id = this.nextId.toString()
       this.nextId++
 
       const newAccount: Account = {
         ...account,
         id,
+        isNew: true,
+        isSaved: false
       }
 
       this.accounts.push(newAccount)
-      this.saveToLocalStorage()
+      // НЕ сохраняем сразу - только через updateAccount
       return newAccount
     },
 
     updateAccount(account: Account): void {
+      console.log('📝 Updating account:', account)
       const index = this.accounts.findIndex((acc) => acc.id === account.id)
       if (index !== -1) {
         this.accounts[index] = account
@@ -35,24 +39,32 @@ export const useAccountsStore = defineStore('accounts', {
     },
 
     saveAccount(account: Account): void {
+      console.log('💾 Saving account:', account)
       const index = this.accounts.findIndex((acc) => acc.id === account.id)
       if (index !== -1) {
-        this.accounts[index] = {
-          ...account,
-          isNew: false,
-          isSaved: true,
+        // Сохраняем только если запись готова к сохранению
+        if (account.isReadyForSave) {
+          console.log('✅ Account saved successfully')
+          this.accounts[index] = {
+            ...account,
+            isNew: false,
+            isSaved: true,
+          }
+          this.saveToLocalStorage()
+        } else {
+          console.log('❌ Account NOT saved - validation failed')
         }
-        this.saveToLocalStorage()
       }
     },
 
     deleteAccount(id: string): void {
+      console.log('🗑️ Deleting account:', id)
       const index = this.accounts.findIndex((acc) => acc.id === id)
       if (index !== -1) {
         const deletedAccount = this.accounts[index]
         this.accounts.splice(index, 1)
         this.saveToLocalStorage()
-        console.log('Account deleted:', deletedAccount)
+        console.log('✅ Account deleted successfully:', deletedAccount)
       }
     },
 
