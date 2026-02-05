@@ -29,36 +29,37 @@
       </template>
     </Column>
 
-    <Column field="login" header="Логин" :colspan="shouldShowPasswordColumn ? 1 : 2">
+    <Column field="login" class="log-pass__header">
+      <template #header>
+        <span>Логин</span>
+        <span>Пароль</span>
+      </template>
+
       <template #body="{ data }">
-        <InputText
-          v-model="data.login"
-          :invalid="!data.login"
-          :maxlength="MAX_LENGTHS.LOGIN"
-          @blur="updateAccount(data)"
-        />
+        <div class="log-pass__body">
+          <InputText
+            v-model="data.login"
+            :invalid="!data.login"
+            :maxlength="MAX_LENGTHS.LOGIN"
+            @blur="updateAccount(data)"
+          />
+
+          <Password
+            v-if="data.type === 'Локальная'"
+            v-model="data.password"
+            :invalid="!data.password"
+            :maxlength="MAX_LENGTHS.PASSWORD"
+            :feedback="false"
+            toggleMask
+            @blur="updateAccount(data)"
+          />
+        </div>
       </template>
     </Column>
 
-    <Column v-if="shouldShowPasswordColumn" field="password" header="Пароль">
-      <template #body="{ data }">
-        <Password
-          v-if="data.type === 'Локальная'"
-          v-model="data.password"
-          :invalid="!data.password"
-          :maxlength="MAX_LENGTHS.PASSWORD"
-          :feedback="false"
-          toggleMask
-          @blur="updateAccount(data)"
-        />
-        <span v-else>-</span>
-      </template>
-    </Column>
-
-    <Column v-if="hasDeletableAccounts" header="">
+    <Column header="">
       <template #body="{ data }">
         <Button
-          v-if="data.isSaved"
           icon="pi pi-trash"
           class="p-button-danger p-button-text"
           @click="deleteAccount(data.id)"
@@ -96,12 +97,12 @@ const prepareAccountForEdit = (account: Account): EditableAccount => {
 const updateAccount = (data: EditableAccount) => {
   const isReady = validateAccount(data)
   const account = prepareForUpdate(data)
-  
+
   // Устанавливаем флаг готовности к сохранению
   account.isReadyForSave = isReady
 
   emit('update-account', account)
-  
+
   // Если готово к сохранению, автоматически сохраняем
   if (isReady) {
     emit('save-account', account)
@@ -160,5 +161,21 @@ watch(
 
 .empty-message p {
   margin: 0.5rem 0;
+}
+
+:deep(.log-pass__header) {
+  .p-datatable-column-header-content {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.log-pass__body {
+  display: flex;
+  gap: 2rem;
+
+  .p-password {
+    flex: 1 0 calc(50% - 1rem);
+  }
 }
 </style>
